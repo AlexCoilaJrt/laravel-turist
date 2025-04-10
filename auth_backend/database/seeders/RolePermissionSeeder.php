@@ -8,25 +8,40 @@ use Spatie\Permission\Models\Permission;
 
 class RolePermissionSeeder extends Seeder
 {
-    public function run(): void
+    public function run()
     {
-        // Crear roles
-        $admin = Role::create(['name' => 'Admin']);
-        $emprendedor = Role::create(['name' => 'Emprendedor']);
-        $usuario = Role::create(['name' => 'Usuario']);
+        // Encuentra los roles
+        $superAdmin = Role::findByName('SuperAdmin');
+        $admin = Role::findByName('Admin');
+        $emprendedor = Role::findByName('Emprendedor');
+        $usuario = Role::findByName('Usuario');
+        $invitado = Role::findByName('Invitado');
 
-        // Permisos de admin
-        Permission::create(['name' => 'gestionar usuarios'])->assignRole($admin);
-        Permission::create(['name' => 'aprobar servicios'])->assignRole($admin);
-        Permission::create(['name' => 'ver reportes'])->assignRole($admin);
+        // Asignar permisos a roles
+        $superAdmin->givePermissionTo([
+            'ver_paquetes', 'crear_editar_paquetes', 'aprobar_paquetes', 'reservar_paquete', 
+            'ver_catalogo', 'crear_editar_productos', 'comprar_productos', 
+            'ver_usuarios', 'crear_editar_usuarios', 'eliminar_usuarios', 'gestionar_roles_permisos', 
+            'ver_empresas', 'crear_editar_empresas'
+        ]);
 
-        // Permisos de emprendedor
-        Permission::create(['name' => 'crear servicios'])->assignRole($emprendedor);
-        Permission::create(['name' => 'editar servicios'])->assignRole($emprendedor);
-        Permission::create(['name' => 'eliminar servicios'])->assignRole($emprendedor);
+        $admin->givePermissionTo([
+            'ver_paquetes', 'crear_editar_paquetes', 'aprobar_paquetes', 'ver_catalogo', 
+            'crear_editar_productos', 'comprar_productos', 'ver_usuarios', 
+            'crear_editar_usuarios', 'eliminar_usuarios', 'ver_empresas', 'crear_editar_empresas'
+        ]);
 
-        // Permisos de usuario
-        Permission::create(['name' => 'reservar servicios'])->assignRole($usuario);
-        Permission::create(['name' => 'calificar servicios'])->assignRole($usuario);
+        $emprendedor->givePermissionTo([
+            'ver_paquetes', 'crear_editar_paquetes', 'ver_catalogo', 
+            'crear_editar_productos', 'comprar_productos', 'ver_empresas', 'crear_editar_empresas'
+        ]);
+
+        $usuario->givePermissionTo([
+            'ver_paquetes', 'reservar_paquete', 'ver_catalogo', 'comprar_productos'
+        ]);
+
+        $invitado->givePermissionTo([
+            'ver_paquetes', 'ver_catalogo'
+        ]);
     }
 }

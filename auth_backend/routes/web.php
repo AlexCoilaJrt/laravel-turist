@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\InvitadoController;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
 
@@ -38,6 +39,10 @@ Route::middleware(['auth'])->group(function () {
     // Rutas accesibles solo para Invitado
     Route::middleware(['role:Invitado'])->group(function () {
     Route::get('/invitado', 'InvitadoController@index');
+    Route::get('/invitado/paquetes', [InvitadoController::class, 'verPaquetes']);
+    Route::get('/paquetes', [InvitadoController::class, 'verPaquetes']);
+    Route::get('/catalogo', [InvitadoController::class, 'verCatalogo']);
+
     // Otras rutas para Invitado
     });
     Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register');
