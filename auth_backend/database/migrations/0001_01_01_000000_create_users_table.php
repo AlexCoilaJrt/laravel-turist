@@ -17,8 +17,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->string('rol')->default('CLIENTE');
-            $table->bigInteger('empresa_id')->nullable();
+            $table->bigInteger('empresa_id')->nullable(); // Si esto es necesario para tu lógica
             $table->rememberToken();
             $table->timestamps();
         });

@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Emprendedor\ServicioController;
 use App\Http\Controllers\Usuario\ReservaController;
+use App\Http\Controllers\Auth\RegisterController;
+
 
 // Ruta por defecto para usuarios no autenticados
 Route::get('/', function () {
@@ -33,4 +35,11 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('/usuario/reservas', ReservaController::class);
         // Otras rutas específicas del usuario como /usuario/perfil, etc.
     });
+    // Rutas accesibles solo para Invitado
+    Route::middleware(['role:Invitado'])->group(function () {
+    Route::get('/invitado', 'InvitadoController@index');
+    // Otras rutas para Invitado
+    });
+    Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register');
+    Route::post('register', [RegisterController::class, 'register']);
 });

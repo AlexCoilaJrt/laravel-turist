@@ -10,123 +10,123 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Spatie\Permission\Models\Role;
 
 class AuthController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function login(Request $request)
     {
-     $validator=Validator::make($request->all(),[
-        'password' => 'required|string',
-        'email' => 'required|email',
-     ],[
-        'email.required' => 'El campo correo es obligatirio',
-        'email.email' => 'El correo no tiene el formato correcto',
-     ]);
-     if ($validator->fails()) {
-        return response()->json(['error'=>$validator->errors()], Response::HTTP_BAD_REQUEST);
-     }
-     $credentials = request(['email','password']);
-     if (!$token=auth()->attempt($credentials)) {
-        return response()->json(['error'=> 'Datos de accesos incorrectos. Por favor, verifica tus credencis'] , Response::HTTP_UNAUTHORIZED);
-     }
-     return $this ->respondWithToken($token);
+        $validator = Validator::make($request->all(), [
+            'password' => 'required|string',
+            'email' => 'required|email',
+        ], [
+            'email.required' => 'El campo correo es obligatorio',
+            'email.email' => 'El correo no tiene el formato correcto',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], Response::HTTP_BAD_REQUEST);
+        }
+
+        $credentials = request(['email', 'password']);
+        if (!$token = auth()->attempt($credentials)) {
+            return response()->json(['error' => 'Datos de acceso incorrectos. Por favor, verifica tus credenciales.'], Response::HTTP_UNAUTHORIZED);
+        }
+
+        return $this->respondWithToken($token);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function unauthorized()
     {
         return redirect(route('login'));
-
     }
 
-   
     public function register(Request $request)
     {
-        $validator=Validator::make($request->all(),[
-           'name'=>'required|string|max:100|min:2',
-           'password'=>'required|string|max:255|min:8',
-           'email'=> 'required|email|max:100|unique:users,email',
-        ],[
-            'name.required'=>'El campo es obligatorio',
-            'name.min'=>'en nombre debe tener almenos :min caracteres',
-            'name.max'=>'El nombre no puede tener mas de :max caracteres',
-            'email.required'=>'El campo correo es obligatorio',
-            'email.unique'=>'El correo ya esta registrado',
-            'email.email'=>'El correo no tiene el formato correcto',
-            'password.required'=>'El campo contraseña es obligatorio',
-            'pasword.min'=>'El campo contraseña es de minimo :min caracteres',
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:100|min:2',
+            'password' => 'required|string|max:255|min:8',
+            'email' => 'required|email|max:100|unique:users,email',
+            'rol' => 'required|string|exists:roles,name',
+        ], [
+            'name.required' => 'El campo nombre es obligatorio',
+            'name.min' => 'El nombre debe tener al menos :min caracteres',
+            'name.max' => 'El nombre no puede tener más de :max caracteres',
+            'email.required' => 'El campo correo es obligatorio',
+            'email.unique' => 'El correo ya está registrado',
+            'email.email' => 'El correo no tiene el formato correcto',
+            'password.required' => 'El campo contraseña es obligatorio',
+            'password.min' => 'El campo contraseña debe tener mínimo :min caracteres',
+            'rol.required' => 'El rol es obligatorio',
+            'rol.exists' => 'El rol ingresado no es válido',
+        ]);
 
-        ]);
         if ($validator->fails()) {
-            return response()->json(['error'=>$validator->errors()], Response::HTTP_BAD_REQUEST);
-    }
-    $exists =User::where('email', htmlspecialchars($request->input('email')))->first();
-    if (!$exists) {
-        $new=User::create([
-            'name'=>htmlspecialchars($request->input('name')),
-            'email'=> htmlspecialchars($request->input('email')),
-            'password'=> Hash::make($request->input('password')),
-            'rol'=>'CLIENTE',
-            'empresa_id'=>null
+            return response()->json(['error' => $validator->errors()], Response::HTTP_BAD_REQUEST);
+        }
+
+        $user = User::create([
+            'name' => htmlspecialchars($request->input('name')),
+            'email' => htmlspecialchars($request->input('email')),
+            'password' => Hash::make($request->input('password')),
+            'empresa_id' => null
         ]);
-        if (! $new) {
-            return response()->json(['error'=> 'No se logro crear'], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-        return response()->json($new, Response::HTTP_CREATED);;
-    }else {
-            return response()->json(['error'=>'Ya existe un usuario con ese email'], Response::HTTP_BAD_REQUEST);
-        }
+
+        $user->assignRole($request->rol); // ← Asignar rol de Spatie al usuario
+
+        return response()->json([
+            'message' => 'Usuario registrado correctamente',
+            'user' => $user->load('roles'),
+        ], Response::HTTP_CREATED);
     }
-   
 
     public function me()
     {
-        return response()->json(auth()->user());
+        return response()->json(auth()->user()->load('roles'));
     }
 
-    
     public function logout()
     {
         auth()->logout();
         try {
             $token = JWTAuth::getToken();
             if (!$token) {
-                return response()->json(['error'=> 'Token no encontrado'], Response::HTTP_BAD_REQUEST);
+                return response()->json(['error' => 'Token no encontrado'], Response::HTTP_BAD_REQUEST);
             }
+
             JWTAuth::invalidate($token);
-            return response()->json(['message'=> 'Sesion cerrada correctamente'], Response::HTTP_OK);
+            return response()->json(['message' => 'Sesión cerrada correctamente'], Response::HTTP_OK);
         } catch (TokenInvalidException $e) {
-            return response()->json(['error'=> 'Token Invalido'], Response::HTTP_UNAUTHORIZED);
+            return response()->json(['error' => 'Token inválido'], Response::HTTP_UNAUTHORIZED);
         } catch (\Exception $e) {
-            return response()->json(['error'=> 'No se pudo cerrar la sesion'], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return response()->json(['error' => 'No se pudo cerrar la sesión'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
-}
-    public function refresh(){
+
+    public function refresh()
+    {
         try {
-            $token= JWTAuth::getToken();
+            $token = JWTAuth::getToken();
             if (!$token) {
-                return response()->json(['error'=> 'Token no encontrado'], Response::HTTP_BAD_REQUEST);
+                return response()->json(['error' => 'Token no encontrado'], Response::HTTP_BAD_REQUEST);
             }
-            $nuevo_token=auth()->refresh();
+
+            $nuevo_token = auth()->refresh();
             JWTAuth::invalidate($token);
             return $this->respondWithToken($nuevo_token);
         } catch (TokenInvalidException $e) {
-            return response()->json(['error'=> 'Token invalido'], Response::HTTP_UNAUTHORIZED);
+            return response()->json(['error' => 'Token inválido'], Response::HTTP_UNAUTHORIZED);
         } catch (\Exception $e) {
-            return response()->json(['error'=> 'No se pudo cerrar la sesion'], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return response()->json(['error' => 'No se pudo refrescar el token'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-    public function respondWithToken($token){
-        return response()->json([
-            'access_token'=>$token,
-            'token_type'=>'bearer',
-            'expires_in'=>auth()->factory()->getTTL()*60
 
-        ],Response::HTTP_OK);
-}
+    public function respondWithToken($token)
+    {
+        return response()->json([
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => auth()->factory()->getTTL() * 60,
+        ], Response::HTTP_OK);
+    }
 }
