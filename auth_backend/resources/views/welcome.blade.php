@@ -273,5 +273,12 @@
         @if (Route::has('login'))
             <div class="h-14.5 hidden lg:block"></div>
         @endif
+        @can('crear servicios')
+    <a href="{{ route('servicios.create') }}">Crear servicio</a>
+@endcan
+@role('Admin')
+    <p>Hola Admin</p>
+@endrole
+
     </body>
 </html>
