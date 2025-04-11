@@ -3,12 +3,14 @@
 use App\Http\Controllers\InvitadoController;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\InvitadoController;
 
 // Controladores
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Emprendedor\ServicioController;
 use App\Http\Controllers\Usuario\ReservaController;
 use App\Http\Controllers\Auth\RegisterController;
+
 
 
 // Ruta por defecto para usuarios no autenticados
@@ -20,7 +22,7 @@ Route::get('/', function () {
 Route::middleware(['auth'])->group(function () {
 
     // Rutas para ADMIN
-    Route::middleware('role:Admin')->group(function () {
+    Route::middleware(middleware: 'role:Admin')->group(function () {
         Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
         // Aquí puedes añadir más rutas de administración si es necesario
     });
@@ -42,6 +44,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/invitado/paquetes', [InvitadoController::class, 'verPaquetes']);
     Route::get('/paquetes', [InvitadoController::class, 'verPaquetes']);
     Route::get('/catalogo', [InvitadoController::class, 'verCatalogo']);
+    Route::get('/algo', [InvitadoController::class, 'index']);
+
 
     // Otras rutas para Invitado
     });
