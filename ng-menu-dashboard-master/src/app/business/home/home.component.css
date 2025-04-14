@@ -1,0 +1,73 @@
+.home-container {
+    font-family: 'Arial', sans-serif;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .hero-section {
+    background: linear-gradient(135deg, #6e48aa, #9d50bb);
+    color: white;
+    padding: 60px 20px 40px;
+    text-align: center;
+    border-radius: 10px;
+    position: relative;
+    margin-bottom: 30px;
+  }
+  
+  .login-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid white;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s;
+  }
+  
+  .login-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+  
+  .services-nav {
+    margin: 40px 0;
+    text-align: center;
+  }
+  
+  .nav-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+  }
+  
+  .nav-item {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: transform 0.3s;
+  }
+  
+  .nav-item:hover {
+    transform: translateY(-5px);
+  }
+  
+  .main-footer {
+    background: #2c3e50;
+    color: white;
+    padding: 30px;
+    border-radius: 10px;
+    margin-top: 50px;
+  }
+  
+  .footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 30px;
+  }
