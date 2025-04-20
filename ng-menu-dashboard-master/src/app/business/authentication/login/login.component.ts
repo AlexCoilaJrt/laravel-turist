@@ -11,7 +11,7 @@ import { CommonModule } from '@angular/common';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export default class LoginComponent {
+export  class LoginComponent {
   email: string = '';
   password: string = '';
   showPassword: boolean = false; // Añadir esta propiedad para manejar la visibilidad de la contraseña
