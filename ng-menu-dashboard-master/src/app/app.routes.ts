@@ -21,6 +21,12 @@ export const routes: Routes = [
           import('./business/authentication/login/login.component').then(m => m.LoginComponent),
         canActivate: [AuthenticatedGuard],
       },
+      {
+        path: 'register', // Nueva ruta de registro
+        loadComponent: () =>
+          import('./business/authentication/register/register.component').then(m => m.RegisterComponent),
+        canActivate: [AuthenticatedGuard],
+      },
     ],
   },
   // Rutas privadas dentro de un layout con sidebar u otros elementos comunes
