@@ -1,6 +1,5 @@
 // src/app/app.routes.ts
 import { Routes } from '@angular/router';
-import { AuthGuard } from './core/guards/auth.guard';
 import { AuthenticatedGuard } from './core/guards/authenticated.guard';
 
 export const routes: Routes = [
@@ -15,18 +14,18 @@ export const routes: Routes = [
           import('./business/home/home.component').then(m => m.HomeComponent),
       },
       {
-        // Ruta para login, accesible sólo si NO está autenticado
         path: 'login',
         loadComponent: () =>
           import('./business/authentication/login/login.component').then(m => m.LoginComponent),
-        canActivate: [AuthenticatedGuard],
+        //canActivate: [AuthenticatedGuard], // Eliminar el guard temporalmente
       },
       
       {
-        path: 'register', // Nueva ruta de registro
+        path: 'register',
         loadComponent: () =>
-          import('./business/authentication/register/register.component').then(m => m.RegisterComponent),
-        //canActivate: [AuthenticatedGuard],
+          import('./business/authentication/register/register.component')
+            .then(m => m.RegisterComponent),
+        // canActivate: [AuthenticatedGuard], // Eliminar el guard temporalmente
       },
     ],
   },
@@ -35,12 +34,13 @@ export const routes: Routes = [
     path: '',
     loadComponent: () =>
       import('./shared/components/layout/layout.component').then(m => m.LayoutComponent),
-    canActivate: [AuthGuard],
+    // canActivate: [AuthGuard], // Eliminar el guard temporalmente
     children: [
       {
         path: 'dashboard',
         loadComponent: () =>
           import('./business/dashboard/dashboard.component').then(m => m.DashboardComponent),
+        canActivate: [AuthenticatedGuard],
       },
       {
         path: 'profile',

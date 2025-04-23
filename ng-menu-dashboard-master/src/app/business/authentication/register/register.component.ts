@@ -1,40 +1,41 @@
-// src/app/business/authentication/register/register.component.ts
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Component }      from '@angular/core';
+import { CommonModule }   from '@angular/common';
+import { FormsModule }    from '@angular/forms';
+import { RouterModule }   from '@angular/router';
+import { AuthService }    from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-register',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.css'], // si usás estilos separados
+  styleUrls: ['./register.component.css'],
 })
 export class RegisterComponent {
-  name: string = '';
-  email: string = '';
-  password: string = '';
-  confirmPassword: string = '';
-  showPassword: boolean = false;
+  name = '';
+  email = '';
+  password = '';
+  rol = 'cliente';       // o el rol que por defecto quieras
+  confirmPassword = '';         // <<< declara esto
+  acceptedTerms = false;        // <<< y esto
+  showPassword = false;
+
+  constructor(private authService: AuthService) {}
 
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
   }
 
   onSubmit() {
-    if (this.password !== this.confirmPassword) {
-      alert('Las contraseñas no coinciden');
-      return;
-    }
-
-    // Acá iría el servicio para enviar los datos al backend
-    console.log('Datos del formulario:', {
+    // Envía sólo si el formulario estuviera validado
+    this.authService.register({
       name: this.name,
       email: this.email,
       password: this.password,
+      rol: this.rol
+    }).subscribe({
+      next: res => console.log('Usuario registrado:', res),
+      error: err => console.error('Error al registrar:', err)
     });
-
-    // Redireccionar o mostrar mensaje de éxito
   }
 }
