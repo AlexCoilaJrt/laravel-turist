@@ -21,11 +21,12 @@ export const routes: Routes = [
           import('./business/authentication/login/login.component').then(m => m.LoginComponent),
         canActivate: [AuthenticatedGuard],
       },
+      
       {
         path: 'register', // Nueva ruta de registro
         loadComponent: () =>
           import('./business/authentication/register/register.component').then(m => m.RegisterComponent),
-        canActivate: [AuthenticatedGuard],
+        //canActivate: [AuthenticatedGuard],
       },
     ],
   },
